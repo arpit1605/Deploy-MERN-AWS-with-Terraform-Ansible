@@ -1,0 +1,28 @@
+- name: Setup Web Servers
+  hosts: web_servers
+  become: true
+  tasks:
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3  
+
+    - name: Install NPM
+      apt:
+        name: npm
+        state: present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3  
+
+    - name: Clone MERN App Repository
+      git:
+        repo: 'https://github.com/UnpredictablePrashant/TravelMemory'
+        dest: /var/www/mern-app
+        version: main
+
+    - name: Install Dependencies
+      command: npm install
+      args:
+        chdir: /var/www/mern-app

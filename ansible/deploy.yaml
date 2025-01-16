@@ -1,0 +1,18 @@
+- name: Deploy MERN Application
+  hosts: web_servers
+  become: true
+  tasks:
+    - name: Set Environment Variables
+      lineinfile:
+        path: /etc/environment
+        line: "{{ item }}"
+      with_items:
+        - 'DB_HOST=db_server_private_ip'
+        - 'DB_USER=app_user'
+        - 'DB_PASS=app_password'
+        - 'PORT=3000'
+
+    - name: Start Node.js Application
+      command: npm start
+      args:
+        chdir: /var/www/mern-app

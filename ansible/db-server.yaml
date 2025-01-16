@@ -1,0 +1,52 @@
+- name: Setup Database Server
+  hosts: db_servers
+  become: true
+  tasks:
+    - name: Install MongoDB
+      apt:
+        name: mongodb
+        state: present
+
+    - name: Start and Enable MongoDB service
+      systemd:
+        name: mongodb
+        state: started
+        enabled: true
+
+- name: Configure and Secure MongoDB
+  hosts: mongodb_servers
+  become: true
+  tasks:
+    - name: Secure MongoDB Instance
+      copy:
+        dest: /etc/mongod.conf
+        content: |
+          net:
+            bindIp: 127.0.0.1,{{ ansible_default_ipv4.address }}
+          security:
+            authorization: enabled
+
+    - name: Restart MongoDB for Configuration Changes
+      service:
+        name: mongod
+        state: restarted
+
+    - name: Create Admin User
+      command: mongo <<EOF
+      use admin
+      db.createUser({
+        user: "admin",
+        pwd: "admin_password",
+        roles: [{ role: "userAdminAnyDatabase", db: "admin" }]
+      })
+      EOF
+
+    - name: Create Application Database and User
+      command: mongo <<EOF
+      use app_db
+      db.createUser({
+        user: "app_user",
+        pwd: "app_password",
+        roles: [{ role: "readWrite", db: "app_db" }]
+      })
+      EOF
