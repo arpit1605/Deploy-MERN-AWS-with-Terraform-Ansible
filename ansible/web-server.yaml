@@ -2,16 +2,11 @@
   hosts: web_servers
   become: true
   tasks:
-    - name: Install Node.js
+    - name: Install Node.js and NPM
       apt:
-        name: nodejs
-        state: present
-      vars:
-        ansible_python_interpreter: /usr/bin/python3  
-
-    - name: Install NPM
-      apt:
-        name: npm
+        name: 
+          - nodejs
+          - npm
         state: present
       vars:
         ansible_python_interpreter: /usr/bin/python3  

@@ -1,0 +1,60 @@
+- name: Security Hardening
+  hosts: all
+  become: true
+  tasks:
+    - name: Configure firewall for SSH
+      firewalld:
+        service: ssh
+        zone: public
+        state: enabled
+        permanent: true
+
+    - name: Configure firewalls for common web ports
+      firewalld:
+        port: "{{ item }}"
+        zone: public
+        state: enabled
+        permanent: true
+      with_items:
+        - 80/tcp
+        - 443/tcp
+
+    - name: Allow Traffic for Node.js (Web Server)
+      firewalld:
+        port: 3000/tcp
+        zone: public
+        state: enabled
+        permanent: true
+      when: inventory_hostname == 'web_server'
+
+    - name: Allow Traffic for MongoDB (Database Server)
+      firewalld:
+        port: 27017/tcp
+        zone: public
+        state: enabled
+        permanent: true
+      when: inventory_hostname == 'db_server'
+
+    - name: Disable Root Login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+
+    - name: Disable Password Authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+
+    - name: Restart SSH Service
+      service:
+        name: sshd
+        state: restarted
+
+    - name: Ensure SSH key pair authentication
+      authorized_key:
+        user: ec2-user
+        key: "{{ lookup('file', '/path/to/your/public/key.pub') }}"

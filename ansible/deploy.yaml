@@ -2,15 +2,16 @@
   hosts: web_servers
   become: true
   tasks:
-    - name: Set Environment Variables
-      lineinfile:
-        path: /etc/environment
-        line: "{{ item }}"
-      with_items:
-        - 'DB_HOST=db_server_private_ip'
-        - 'DB_USER=app_user'
-        - 'DB_PASS=app_password'
-        - 'PORT=3000'
+    - name: Configure Environment Variables
+      copy:
+        dest: /var/www/mern-app/.env
+        content: |
+          DB_HOST={{ hostvars['dbserver']['ansible_host'] }}
+          DB_USER=your_user
+          DB_PASS=your_password
+          DB_NAME=mernApp
+          PORT=3000
+          JWT_SECRET=superSecret
 
     - name: Start Node.js Application
       command: npm start
