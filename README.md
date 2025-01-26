@@ -1,10 +1,59 @@
-# MERN Stack Deployment on AWS with Terraform and Ansible
+# Project Overview for MERN Stack Deployment on AWS with Terraform and Ansible
 
-This guide describes the process of deploying a MERN stack application on AWS using Terraform for infrastructure management and Ansible for application configuration and deployment.
-
+This project involves deploying a MERN (MongoDB, Express.js, React.js, Node.js) stack application on AWS. The infrastructure setup is managed by Terraform, which provisions and configures AWS resources, while Ansible is used for application configuration and deployment tasks.
 
 ## Link to the GitHub repository for the MERN application:
 https://github.com/UnpredictablePrashant/TravelMemory
+
+
+## Infrastructure Setup with Terraform
+
+### Components:
+
+- **VPC (Virtual Private Cloud)**: Serves as the isolated network for running AWS resources.
+- **Subnets**: Public and private subnets handle traffic routing to the Internet and internally within AWS.
+- **Internet Gateway & NAT Gateway**: Provide Internet access to instances in public and private subnets.
+- **EC2 Instances**: Serve as virtual servers for running the application's web and database components.
+- **Security Groups**: Define the ingress and egress rules for traffic to and from EC2 instances.
+
+### Process:
+
+- **Initialization (`terraform init`)**: Prepares the Terraform environment by downloading necessary providers and initializing the backend.
+- **Planning (`terraform plan`)**: Generates an execution plan, allowing for a preview of the actions Terraform will perform.
+- **Application (`terraform apply`)**: Executes the plan to create the infrastructure, setting up all the components listed above.
+
+## Configuration and Deployment with Ansible
+
+### Components:
+
+- **Web Server Configuration**: Sets up Node.js and related dependencies on EC2 instances designated for web server roles.
+- **Database Server Configuration**: Installs and configures MongoDB on designated EC2 instances for database roles.
+- **Application Deployment**: Deploys the application code, configuring environment variables and starting the application services.
+
+### Process:
+
+- **Inventory Setup**: Updates the inventory.ini file to specify the hosts, their roles, and connection details.
+- **Playbook Execution**:
+  - **Web Server Setup (`ansible-playbook web-server.yaml`)**: Runs tasks to configure the web server environment.
+  - **Database Server Setup (`ansible-playbook db-server.yaml`)**: Runs tasks to prepare the database environment.
+  - **Application Deployment (`ansible-playbook deploy.yaml`)**: Deploys application code and starts services.
+
+## Interactions Between Components
+
+- **React.js Frontend**: Runs in users' browsers, makes API calls to the Express.js backend hosted on AWS EC2.
+- **Express.js Backend**: Hosted on EC2, handles API requests, interacts with MongoDB for data retrieval and storage, and serves the static files for the frontend.
+- **MongoDB Database**: Also hosted on EC2 within private subnets, interacts only with the backend component for security.
+
+## Security and Monitoring
+
+- **Security Groups**: Ensure that only appropriate ports are open (e.g., HTTP/HTTPS for web servers, MongoDB port only from web servers).
+- **Ansible Security Hardening**: Additional tasks may include setting up firewalls, configuring SSL/TLS, and hardening SSH access.
+- **Monitoring**: AWS CloudWatch monitors instance performance and logs system events. Ansible can configure additional monitoring tools like Prometheus or Grafana for application-level metrics.
+
+## Backup
+
+- **Backup**: Terraform state files are backed up in S3, ensuring recoverability. Database backups are handled via MongoDB tools and stored securely.
+
 
 
 ## Prerequisites
