@@ -3,6 +3,10 @@
 This guide describes the process of deploying a MERN stack application on AWS using Terraform for infrastructure management and Ansible for application configuration and deployment.
 
 
+## Link to the GitHub repository for the MERN application:
+https://github.com/UnpredictablePrashant/TravelMemory
+
+
 ## Prerequisites
 
 - Install Terraform: [Download & Install Terraform](https://www.terraform.io/downloads.html)
